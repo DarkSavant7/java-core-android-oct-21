@@ -25,6 +25,9 @@ public class Homework {
         System.out.println(findMax(123, 2141, 545, 6767, 78, 78, 9));
         int[] arrr = {123, 2141, 545, 6767, 78, 78, 9};
         System.out.println(findMax(arrr));
+
+        int[][] diag = fillDiagonals(15, 9);
+        print2dArray(diag);
     }
 
     //Задать целочисленный массив, состоящий из элементов 0 и 1. Например: [ 1, 1, 0, 0, 1, 0, 1, 1, 0, 0 ].
@@ -102,6 +105,15 @@ public class Homework {
             if (half == sum) return true;
         }
         return false;
+    }
+
+    public static int[][] fillDiagonals(int size, int value) {
+        int[][] arr = new int[size][size];
+        for (int i = 0; i < arr.length; i++) {
+            arr[i][i] = value;
+            arr[i][size - i - 1] = value;
+        }
+        return arr;
     }
 
     static void print2dArray(int[][] arr) {
