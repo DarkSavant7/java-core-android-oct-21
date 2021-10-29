@@ -194,7 +194,7 @@ public class Classwork {
         int choice = 2;
 
         switch (choice) {
-            case 1 -> {
+            case 1, 20, 40 -> {
                 System.out.println("Give Coca-Cola");
                 System.out.println();
                 //.....
@@ -210,7 +210,7 @@ public class Classwork {
         int choice = 2;
 
         switch (choice) {
-            case 1:
+            case 1, 19, 25:
                 System.out.println("Give Coca-Cola");
                 break;
             case 2:
