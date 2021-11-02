@@ -31,11 +31,11 @@ public class GuessTheWord {
         System.out.println("DEBUG: " + wordAI);
         String wordUser;
         char[] guessedLetters = new char[15];
+        Arrays.fill(guessedLetters, '#');
 
         System.out.print("AI want you to guess a word from these: ");
         System.out.println(Arrays.toString(words));
         while (true) {
-            Arrays.fill(guessedLetters, '#');
             System.out.print("Enter your guess >>> ");
             wordUser = scanner.next();
 

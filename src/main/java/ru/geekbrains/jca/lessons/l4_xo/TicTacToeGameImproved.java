@@ -3,7 +3,7 @@ package ru.geekbrains.jca.lessons.l4_xo;
 import java.util.Random;
 import java.util.Scanner;
 
-public class TicTacToeGame {
+public class TicTacToeGameImproved {
     private static final char DOT_X = 'X';
     private static final char DOT_O = 'O';
     private static final char DOT_EMPTY = '.';
@@ -18,6 +18,7 @@ public class TicTacToeGame {
     private static int roundCounter;
     private static char dotHuman;
     private static char dotAi;
+    private static int winLength;
 
     public static void main(String[] args) {
         play();
@@ -38,17 +39,7 @@ public class TicTacToeGame {
 
     private static void playRound() {
         System.out.printf("ROUND № %d\n", roundCounter++);
-        initField(3, 3);
-
-        System.out.println("Please enter 'x' if you want to play with X, and something else for O >>> ");
-        String x = scanner.next();
-        if (x.toLowerCase().equals("x")) {
-            dotHuman = DOT_X;
-            dotAi = DOT_O;
-        } else {
-            dotHuman = DOT_O;
-            dotAi = DOT_X;
-        }
+        setGameProperties();
         printField();
 
         while (true) {
@@ -70,8 +61,38 @@ public class TicTacToeGame {
         }
     }
 
+    private static void setGameProperties() {
+        System.out.println("Please enter 'x' if you want to play with X, and something else for O >>> ");
+        String x = scanner.next();
+        if (x.toLowerCase().equals("x")) {
+            dotHuman = DOT_X;
+            dotAi = DOT_O;
+        } else {
+            dotHuman = DOT_O;
+            dotAi = DOT_X;
+        }
+        System.out.println("Please enter the wanted field size for width and height split by whitespace >>> ");
+        int sizeX = scanner.nextInt();
+        int sizeY = scanner.nextInt();
+        if (sizeX < 3) {
+            sizeX = 3;
+        }
+        if (sizeY < 3) {
+            sizeY = 3;
+        }
+        initField(sizeX, sizeY);
+        System.out.println("Please enter the wanted win length >>> ");
+        winLength = scanner.nextInt();
+        if (winLength < 3) {
+            winLength = 3;
+        }
+        if (winLength > fieldSizeX || winLength > fieldSizeY) {
+            winLength = Math.min(fieldSizeX, fieldSizeY);
+        }
+    }
+
     private static boolean checkAll(char dot) {
-        if (checkWin(dot)) {
+        if (checkWin(dot, winLength)) {
             if (dot == dotHuman) {
                 System.out.println("Human WIN!!!");
                 scoreHuman++;
@@ -95,29 +116,15 @@ public class TicTacToeGame {
         return true;
     }
 
-    /*
-     * Главное ДЗ:
-     * Сделать проверку победы в циклах
-     * В идеале, сделать такую проверку, которой неважен размер поля и длина выигрышной последовательности
-     */
-    private static boolean checkWin(char dot) {
-        //hor
-        if (field[0][0] == dot && field[0][1] == dot && field[0][2] == dot) return true;
-        if (field[1][0] == dot && field[1][1] == dot && field[1][2] == dot) return true;
-        if (field[2][0] == dot && field[2][1] == dot && field[2][2] == dot) return true;
-
-        //ver
-        if (field[0][0] == dot && field[1][0] == dot && field[2][0] == dot) return true;
-        if (field[0][1] == dot && field[1][1] == dot && field[2][1] == dot) return true;
-        if (field[0][2] == dot && field[1][2] == dot && field[2][2] == dot) return true;
-
-        //diag
-        if (field[0][0] == dot && field[1][1] == dot && field[2][2] == dot) return true;
-        if (field[0][2] == dot && field[1][1] == dot && field[2][0] == dot) return true;
-        return false;
+    private static void aiTurn() {
+        for (int i = 0; winLength - i > 2; i++) {
+            if (scanField(dotAi, winLength - i)) return;        // проверка выигрыша компа
+            if (scanField(dotHuman, winLength - i)) return;    // проверка выигрыша игрока на след ходу
+        }
+        aiTurnEasy();
     }
 
-    private static void aiTurn() {
+    private static void aiTurnEasy() {
         int x;
         int y;
         do {
@@ -125,6 +132,52 @@ public class TicTacToeGame {
             y = random.nextInt(fieldSizeY);
         } while (!isCellEmpty(y, x));
         field[y][x] = dotAi;
+    }
+
+    private static boolean scanField(char dot, int length) {
+        for (int y = 0; y < fieldSizeY; y++) {
+            for (int x = 0; x < fieldSizeX; x++) {
+                if (isCellEmpty(y, x)) {                // поставим фишку в каждую клетку поля по очереди
+                    field[y][x] = dot;
+                    if (checkWin(dot, length)) {
+                        if (dot == dotAi) return true;    // если комп выигрывает, то оставляем
+                        if (dot == dotHuman) {
+                            field[y][x] = dotAi;            // Если выигрывает игрок ставим туда 0
+                            return true;
+                        }
+                    }
+                    field[y][x] = DOT_EMPTY;            // если никто ничего, то возвращаем как было
+                }
+            }
+        }
+        return false;
+    }
+
+    private static boolean checkWin(char dot, int length) {
+        for (int y = 0; y < fieldSizeY; y++) {            // проверяем всё поле
+            for (int x = 0; x < fieldSizeX; x++) {
+                if (checkLine(x, y, 1, 0, length, dot)) return true;    // проверка  по +х
+                if (checkLine(x, y, 1, 1, length, dot)) return true;    // проверка по диагонали +х +у
+                if (checkLine(x, y, 0, 1, length, dot)) return true;    // проверка линию по +у
+                if (checkLine(x, y, 1, -1, length, dot)) return true;    // проверка по диагонали +х -у
+//                if (checkLine(i, j, -1, 0, length, dot)) return true;	// проверка  по +х
+//                if (checkLine(i, j, -1, 1, length, dot)) return true;	// проверка по диагонали +х +у
+//                if (checkLine(i, j, 0, -1, length, dot)) return true;	// проверка линию по +у
+//                if (checkLine(i, j, -1, -1, length, dot)) return true;	// проверка по диагонали +х -у
+            }
+        }
+        return false;
+    }
+
+    // проверка линии
+    private static boolean checkLine(int x, int y, int incrementX, int incrementY, int len, char dot) {
+        int endXLine = x + (len - 1) * incrementX;            // конец линии по Х
+        int endYLine = y + (len - 1) * incrementY;            // конец по У
+        if (!isCellValid(endYLine, endXLine)) return false;    // Выход линии за пределы
+        for (int i = 0; i < len; i++) {                    // идем по линии
+            if (field[y + i * incrementY][x + i * incrementX] != dot) return false;    // символы одинаковые?
+        }
+        return true;
     }
 
     private static void humanTurn() {
