@@ -2,11 +2,12 @@ package ru.geekbrains.jca.lessons.lesson7_oop;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 
 public class Classwork {
     public static void main(String[] args) {
 //        stringBuilderExample();
-//        bigNumbers();
+        bigNumbers();
 //        catsBowls();
 //        fightExample();
 //        simpleEnumExample();
@@ -87,7 +88,9 @@ public class Classwork {
 
     private static void bigNumbers() {
         BigInteger bi = new BigInteger("100500");
-        BigDecimal bd = new BigDecimal("1005000.55");
+        BigDecimal bd = new BigDecimal("1005000.55435435435");
+        bd = bd.setScale(3, RoundingMode.UP);
+        System.out.println(bd);
 //        bd.setScale()
     }
 
