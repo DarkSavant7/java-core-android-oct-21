@@ -1,5 +1,7 @@
 package ru.geekbrains.jca.lessons.lesson7_oop;
 
+import ru.geekbrains.jca.lessons.lesson9_exceptions.MadCatException;
+
 public class Cat {
     private String name;
     private int appetite;
@@ -15,10 +17,13 @@ public class Cat {
             System.out.printf("%s has ate\n", name);
             satiety = true;
         } else {
-            System.out.printf("%s not enough\n", name);
-
+            throw new MadCatException("I'm HUNGRY!!!!!");
         }
 
+    }
+
+    public int getAppetite() {
+        return appetite;
     }
 
     @Override

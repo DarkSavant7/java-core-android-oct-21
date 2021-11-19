@@ -1,6 +1,9 @@
 package ru.geekbrains.jca.lessons.lesson7_oop;
 
+import ru.geekbrains.jca.lessons.lesson9_exceptions.BowlOverflowException;
+
 public class Bowl {
+    private static final int MAX_CAPACITY = 300;
     private int foodAmount;
 
     public boolean decreaseFood(int amount) {
@@ -16,8 +19,12 @@ public class Bowl {
         if (amount < 0) {
             return;
         }
+        if (foodAmount + amount > MAX_CAPACITY) {
+            throw new BowlOverflowException("Too much food");
+        }
         foodAmount += amount;
         System.out.printf("Food increased for %d, %d now\n", amount, foodAmount);
+
     }
 
     public int getFoodAmount() {
